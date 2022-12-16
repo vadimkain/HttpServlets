@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- После кодировки и версии идут теги. Каждый XML начинается с root тега (в нашем случае это request) -->
+<request id="25">
+    <!-- Внутри тега можем писать другие теги или какую-нибудь информацию -->
+
+    <!-- HTTP запрос состоит из трёх основных частей: general (start-row), headers, body: -->
+
+    <!-- Помимо тегов есть ещё атрибуты. Атрибуты обычно устанавливаются только в отрывающем теге. -->
+
+    <start-row>
+        <method>GET</method>
+        <url>www.google.com</url>
+        <version>1.1</version>
+    </start-row>
+    <headers>
+        <header name="content-type" value="text/html"/>
+        <header name="accept" value="application/json"/>
+        <!--
+        <header >
+            <name>content-type</name>
+            <value>text/html</value>
+        </header>
+        <header>
+            <name>accept</name>
+            <value>application/json</value>
+        </header>
+        -->
+    </headers>
+    <body type="text/plain"/>
+    <!-- Если тег пустой, то пишется <body /> -->
+</request>
