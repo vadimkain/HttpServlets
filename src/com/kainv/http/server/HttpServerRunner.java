@@ -5,7 +5,7 @@ package com.kainv.http.server;
  */
 public class HttpServerRunner {
     public static void main(String[] args) {
-        HttpsServer httpServer = new HttpsServer(9000);
+        HttpsServer httpServer = new HttpsServer(9000, 100);
         httpServer.run();
     }
 }
