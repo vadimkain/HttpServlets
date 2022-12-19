@@ -7,16 +7,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
- * <h1>HTTP. Servlets. 29. Параметры запроса. Postman</h1>
- * Специальный заголовок, header, который мы дополнительно передаём на сервер - это MIME тип:
- * <i>x-www-form-urlencoded</i> и как раз таки этот заголовок позволяет передавать дополнительно параметры в теле
- * запроса.
+ * <h1>HTTP. Servlets. 30. Работа с телом запроса. HTTP Body</h1>
  */
 @WebServlet("/first")
 public class FirstServlet extends HttpServlet {
@@ -79,7 +78,11 @@ public class FirstServlet extends HttpServlet {
     }
 
     /**
-     * <h2>Метод, в котором получаем параметры из тела запроса от пользователя</h2>
+     * <h2>Обрабатываем RAW тип, который получили от пользователя</h2>
+     * <p>
+     * Для того, чтобы принять тело запроса, будем использовать объект типа request и метод {@code .getReader()}, если
+     * необходимо считать всё в качестве символов строк. Если же есть какой-то бинарный тип, это это
+     * {@code .getInputStream()}, т.е. мы считываем какой-то файл из нашего браузера.
      *
      * @param req
      * @param resp
@@ -88,9 +91,13 @@ public class FirstServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // Получаем ключи и значения параметров от запроса
-        Map<String, String[]> parameterMap = req.getParameterMap();
-        System.out.println(parameterMap);
+        try (
+                BufferedReader reader = req.getReader();
+                // Метод для считывания построчно, возвращает объект типа Stream<T>
+                Stream<String> lines = reader.lines();
+        ) {
+            lines.forEach(System.out::println);
+        }
     }
 
     @Override
