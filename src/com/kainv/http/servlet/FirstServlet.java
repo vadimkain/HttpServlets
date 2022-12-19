@@ -10,9 +10,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
+import java.util.Map;
 
 /**
- * <h1>HTTP. Servlets. 28. Работа с заголовками. HTTP Headers</h1>
+ * <h1>HTTP. Servlets. 29. Параметры запроса. Postman</h1>
+ * Специальный заголовок, header, который мы дополнительно передаём на сервер - это MIME тип:
+ * <i>x-www-form-urlencoded</i> и как раз таки этот заголовок позволяет передавать дополнительно параметры в теле
+ * запроса.
  */
 @WebServlet("/first")
 public class FirstServlet extends HttpServlet {
@@ -72,6 +76,21 @@ public class FirstServlet extends HttpServlet {
             writer.write("<h1>Привет из first сервлета!</h1>");
         }
         super.service(req, resp);
+    }
+
+    /**
+     * <h2>Метод, в котором получаем параметры из тела запроса от пользователя</h2>
+     *
+     * @param req
+     * @param resp
+     * @throws ServletException
+     * @throws IOException
+     */
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Получаем ключи и значения параметров от запроса
+        Map<String, String[]> parameterMap = req.getParameterMap();
+        System.out.println(parameterMap);
     }
 
     @Override
