@@ -11,12 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Enumeration;
-import java.util.Map;
 import java.util.stream.Stream;
 
-/**
- * <h1>HTTP. Servlets. 30. Работа с телом запроса. HTTP Body</h1>
- */
 @WebServlet("/first")
 public class FirstServlet extends HttpServlet {
     @Override
