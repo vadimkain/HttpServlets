@@ -1,17 +1,25 @@
 package com.kainv.http.util;
 
+import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 /**
- * Для DAO нам нужен утилитный класс для соединения с базой данных
- * <h3>Здесь реализуем так, что на каждый запрос открываем соединение. Так лучше не делать!!!</h3>
+ * <h2>Ставим аннотации от lombok</h2>
+ * <p>
+ * Так, как {@code ConnectionManager} это утилитный класс, где {@code final class} и {@code private} конструктор,
+ * теперь нам делать этого не нужно, можно просто поставить аннотацию:
+ * <pre>{@code @UtilityClass}</pre>
+ * </p>
+ * <p>
+ * Мы часто использовали исключения. Теперь можно этого не делать. Для этого есть специальная аннотация:
+ * <pre>{@code @SneakyThrows}</pre>
+ * </p>
  */
-public final class ConnectionManager {
-    private ConnectionManager() {
-    }
-
+@UtilityClass
+public class ConnectionManager {
     static {
         loadDriver();
     }
@@ -28,15 +36,12 @@ public final class ConnectionManager {
     private static final String USER_KEY = "db.user";
     private static final String PASSWORD_KEY = "db.password";
 
+    @SneakyThrows
     public static Connection get() {
-        try {
-            return DriverManager.getConnection(
-                    PropertiesUtil.get(URL_KEY),
-                    PropertiesUtil.get(USER_KEY),
-                    PropertiesUtil.get(PASSWORD_KEY)
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        return DriverManager.getConnection(
+                PropertiesUtil.get(URL_KEY),
+                PropertiesUtil.get(USER_KEY),
+                PropertiesUtil.get(PASSWORD_KEY)
+        );
     }
 }

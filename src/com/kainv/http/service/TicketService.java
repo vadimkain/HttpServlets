@@ -5,7 +5,6 @@ import com.kainv.http.dao.TicketDao;
 import com.kainv.http.dto.TicketDto;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -29,11 +28,17 @@ public class TicketService {
      */
     public List<TicketDto> findAllByFlightId(Long flightId) {
         return ticketDao.findByFlightId(flightId).stream()
-                .map(ticket -> new TicketDto(
+                /*.map(ticket -> new TicketDto(
                         ticket.getId(),
                         ticket.getFlight_id(),
                         ticket.getSeatNo()
-                ))
+                ))*/
+                .map(ticket -> TicketDto.builder()
+                        .id(ticket.getId())
+                        .flightId(ticket.getFlight_id())
+                        .seatNo(ticket.getSeatNo())
+                        .build()
+                )
                 .collect(toList());
     }
 }
