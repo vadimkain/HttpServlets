@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>HTTP. Servlets. 38. Перенаправление запросов</h1>
+<p>
+    Перенаправление запросов - это когда мы приняли наш запрос на одном сервлете и каким-то образом понимаем, что нам
+    нужна помощь других сервлетов для обработки этого запроса. И в случае с Apache Tomcat у нас есть три варианта
+    того, как можем перенаправить запрос:
+</p>
+<img src="commit-38-1.png" width="50%">
+<ol>
+    <li>
+        <b>forward</b>
+        <br>
+        Допустим с клиента отправляем запрос на сервер по URL: <code>localhost:8080/dispatcher</code>. Следовательно,
+        у нас есть маппинг на этот URL, на сервлет <code>DispatcherServlet</code>. На этом сервлете мы понимаем, что
+        нам недостаточно кода, либо по каким-то другим соображением понимаем, что нужно перенаправить запрос другому
+        сервлету. Например, на <code>FlightServlet</code>. Для этого мы у специального объекта
+        <code>RequestDispatcher</code>
+        вызываем метод <code>.forward()</code> (<code style="color: brown">dispatcher.forward(req, resp)</code>) и
+        полностью перенаправляем
+        запрос на другой сервлет и он уже возвращает ответ серверу, а тот в свою очередь ответ клиенту.
+    </li>
+    <li>
+        <b>include</b>
+        <br>
+        Точно так же отправляем запрос на сервер по URL, который маппится на сервлет <code>DispatcherServlet</code>,
+        опять понимаем, что не можем по каким-то причинам полностью обработать этот запрос сами и делаем запрос по
+        специальному методу на другой сервлет (<code>FlightServlet</code>). В этом случае, <code>FlightServlet</code>
+        возвращает ответ не серверу, а обратно <code>DispatcherServlet</code> таким образом, получается, что включаем
+        часть ответа от <code>FlightServlet</code> в <code>DispatcherServlet</code>. И уже он возвращает ответ серверу,
+        а тот в свою очередь клиенту.
+        <br>
+        Include очень часто используется в jsp страницах. В других случаях - практически никогда.
+    </li>
+    <li>
+        <b>redirect</b>
+        <br>
+        Используется не только в Apache Tomcat, но и в принципе при работе с протоколом HTTP. Суть в том, что опять
+        через клиента отправляем запрос на <code>localhost:8080/dispatcher</code> и сервер маппит этот путь на наш
+        <code>DispatcherServlet</code> и в этом сервлете и объекта типа <code>Response</code> вызываем
+        <code>.sendRedirect()</code> на URL <code>/flights</code> (<code style="color: brown">resp.sendRedirect("/flight")</code>).
+        <i>И происходит следующее:</i> сервер возвращает ответ со статус-кодом 302 (перенаправление на URL, который
+        указан в заголовке ответа). Берём этот заголовок, извлекаем оттуда URL, на который должны перейти и клиент
+        делает новый запрос на сервер по-новому URL, следовательно, клиент даже видит, что у него URL изменился в
+        отличие от forward и include. И после второго запроса на <code>/flights</code> наш сервер сразу направляет
+        на другой сервлет <code>FlightServlet</code>, он уже обработал запрос и вернул серверу ответ, а сервер вернул
+        ответ клиенту.
+    </li>
+</ol>
+<h3>Посмотрим, как это реализовано в Java.</h3>
+<h2>Важный момент с forward & include</h2>
+<pre>
+@WebServlet("/dispatcher")
+public class DispatcherServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("/flights").forward(req, resp);
+
+        System.out.println();
+    }
+}
+</pre>
+<pre>
+@WebServlet("/flights")
+public class FlightServlet extends HttpServlet {
+    private final FlightService flightService = FlightService.getInstance();
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Устанавливаем заголовки
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        // Отправляем пользователю список перелётов
+        try (PrintWriter printWriter = resp.getWriter()) {
+            printWriter.write("<\h1>Список перелётов:<\/h1>");
+            printWriter.write("<\ul>");
+            flightService.findAll().stream().forEach(flightDto -> {
+                printWriter.write("""
+                        <\li>
+                        <\a href="/tickets?flightId=%d">%s<\/a>
+                        <\/li>
+                        """.formatted(flightDto.getId(), flightDto.getDescription()));
+            });
+            printWriter.write("<\/ul>");
+        }
+    }
+}
+</pre>
+<p>
+    Как только мы выходим из <code>OutputStream</code> в <code>FlightServlet</code>, мы его сразу закрываем, то именно
+    после закрытия <code>OutputStream</code> сразу происходит получение ответа нашим клиентом. Это очень важный момент.
+    Как только закрыли <code>OutputStream</code> с которым связаны с клиентом нашим, то сразу же клиент получает
+    response и ничего не можем с ним сделать в <code>DispatcherServlet</code>.
+</p>
+<p>
+    Даже если мы в <code>DispatcherServlet</code> продолжим писать что-то:
+</p>
+<pre>
+@Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.getRequestDispatcher("/flights").forward(req, resp);
+
+        PrintWriter writer = resp.getWriter();
+        writer.write("Hello 2");
+        System.out.println();
+    }
+</pre>
+<p>
+    То мы все равно ничего не запишем в выходной поток. Конечно, в случае <code>.forward()</code> мы бы ничего и не
+    записали в любом случае. <b>Но если используем include, тогда это имеет значение</b>. Потому что тогда мы сможем
+    дописать в выходной поток <code>DispatcherServlet</code> то, что нам надо.
+</p>
+<p>
+    Поэтому, для того чтобы не закрывать <code>OutputStream</code> - просто не оборачиваем в <code>try-catch</code>.
+    Тогда сможем в <code>DispatcherServlet</code> дописать то, что нам нужно. В таком случае не будет возвращен ответ
+    клиенту из <code>FlightServlet</code> сразу же после того, как вышли из блока <code>try-catch</code>.
+</p>
+<pre>
+@WebServlet("/flights")
+public class FlightServlet extends HttpServlet {
+    private final FlightService flightService = FlightService.getInstance();
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        // Устанавливаем заголовки
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        // Отправляем пользователю список перелётов
+        PrintWriter printWriter = resp.getWriter();
+        printWriter.write("<\h1>Список перелётов:<\/h1>");
+        printWriter.write("<\ul>");
+        flightService.findAll().stream().forEach(flightDto -> {
+            printWriter.write("""
+                    <\li>
+                    <\a href="/tickets?flightId=%d">%s<\/a>
+                    <\/li>
+                    """.formatted(flightDto.getId(), flightDto.getDescription()));
+        });
+        printWriter.write("<\/ul>");
+
+    }
+}
+</pre>
+<pre>
+@WebServlet("/dispatcher")
+public class DispatcherServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        resp.setCharacterEncoding(StandardCharsets.UTF_8.name());
+
+        req.getRequestDispatcher("/flights").include(req, resp);
+
+        PrintWriter writer = resp.getWriter();
+        writer.write("Hello 2");
+        System.out.println();
+    }
+}
+</pre>
+<h3>Результат работы с forward:</h3>
+<img src="commit-38-3.png" width="30%" />
+<h3>Результат работы с include:</h3>
+<img src="commit-38-2.png" width="30%" />
+<p>
+    Теперь, что мы запишем до или после include имеет значение, потому что, как видим на рисунке, include возвращает
+    выполнение нашему <code>DispatcherServlet</code>'у и можем продолжить писать выходной поток в response.
+</p>
+<p><b>
+    Все заголовки, установленные в <code>FlightServlet</code> - они не работают, потому что включили только часть
+    response нашего body. Заголовки должны указывать в <code>DispatcherServlet</code>, потому что он главный за
+    ответ нашему клиенту.
+</b></p>
+</body>
+</html>
