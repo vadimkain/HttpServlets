@@ -5,6 +5,7 @@ import lombok.experimental.UtilityClass;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * <h2>Ставим аннотации от lombok</h2>
@@ -36,12 +37,16 @@ public class ConnectionManager {
     private static final String USER_KEY = "db.user";
     private static final String PASSWORD_KEY = "db.password";
 
-    @SneakyThrows
+   // @SneakyThrows
     public static Connection get() {
-        return DriverManager.getConnection(
-                PropertiesUtil.get(URL_KEY),
-                PropertiesUtil.get(USER_KEY),
-                PropertiesUtil.get(PASSWORD_KEY)
-        );
+        try {
+            return DriverManager.getConnection(
+                    PropertiesUtil.get(URL_KEY),
+                    PropertiesUtil.get(USER_KEY),
+                    PropertiesUtil.get(PASSWORD_KEY)
+            );
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
