@@ -1,5 +1,6 @@
 package com.kainv.http.servlet;
 
+import com.kainv.http.dto.UserDto;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -37,12 +38,49 @@ import java.io.IOException;
  * </p>
  * <p>Проверим, была ли вновь создана сессия:</p>
  * <pre>{@code System.out.println(session.isNew());}</pre>
+ * <h1>HTTP. Servlets. 37. Attributes</h1>
+ * <p>
+ *     Проверим, есть ли у сессии наш атрибут {@code public static final String USER = "user";}. Если он там есть, то
+ *     мы уже установили в эту сессию пользователя, т.е. он уже пришел не в первые.
+ * </p>
+ * <pre>{@code UserDto user = (UserDto) session.getAttribute(USER);}</pre>
+ * <p>
+ *     Если {@code user == null}, значит это первый запрос от пользователя и только теперь можем создать этого
+ *     пользователя и положить его в сессию:
+ * </p>
+ * <pre>{@code
+ *         if (user == null) {
+ *             // Создаём пользователя, обычно создаётся один раз на странице login
+ *             user = UserDto.builder()
+ *                     .id(25L)
+ *                     .mail("kainv@gmail.com")
+ *                     .build();
+ *
+ *             // Ложим созданного юзера в сессию
+ *             session.setAttribute(USER, user);
+ *         }
+ * }</pre>
  */
 @WebServlet("/sessions")
 public class SessionServlet extends HttpServlet {
+    public static final String USER = "user";
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession session = req.getSession();
+
+        UserDto user = (UserDto) session.getAttribute(USER);
+
+        if (user == null) {
+            // Создаём пользователя, обычно создаётся один раз на странице login
+            user = UserDto.builder()
+                    .id(25L)
+                    .mail("kainv@gmail.com")
+                    .build();
+
+            // Ложим созданного юзера в сессию
+            session.setAttribute(USER, user);
+        }
 
         System.out.println(session.isNew());
     }
