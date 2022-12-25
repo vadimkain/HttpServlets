@@ -26,6 +26,7 @@
     </li>
 </ul>
 <img src="content-3.png" alt="" width="30%">
+
 <%@include file="header.jsp" %>
 <div>
     <span>Content. Русский.</span>

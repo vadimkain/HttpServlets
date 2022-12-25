@@ -3,8 +3,6 @@
 <%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 
-<!--%@ taglib prefix="c" uri="http://mycompany.com" %-->
-
 <%@ include file="index.html" %>
 
 <html>
@@ -37,6 +35,16 @@
         <pre>< %@ include file="index.html" % ></pre>
     </li>
 </ul>
+<h1>HTTP. Servlets. 43. JSTL. Теория</h1>
+<img src="content-4.png" alt="" width="40%">
+<img src="content-5.png" alt="" width="40%">
+<img src="content-6.png" alt="" width="40%">
+<img src="content-7.png" alt="" width="40%">
+<img src="content-8.png" alt="" width="40%">
+<img src="content-9.png" alt="" width="40%">
+<img src="content-10.png" alt="" width="40%">
+<img src="content-11.png" alt="" width="40%">
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <h1>Купленные билеты:</h1>
 <ul>
     <%-- Используем скреплеты (это вкрепление java в .jsp страничку). Так нельзя не делать --%>
