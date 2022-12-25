@@ -1,9 +1,6 @@
-<%@ page import="com.kainv.http.service.TicketService" %>
-<%@ page import="com.kainv.http.dto.TicketDto" %>
-<%@ page import="java.util.List" %>
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ include file="index.html" %>
+<%@ include file="../../index.html" %>
 
 <html>
 <head>
@@ -25,7 +22,7 @@
         элементы библиотеки которой будем обращаться (в основном используется <code>c</code>). Далее указываем
         <code>uri</code>, пусть у нашей библиотеке из которой будем получать необходимые новые теги. Обычно используется
         просто сайт.
-        <pre>< %@ taglib prefix="c" uri="http://mycompany.com" % ></pre>
+        <pre>< %@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" % ></pre>
     </li>
     <li>
         <b style="color: orange"><@ include</b> позволяет включать в нашу jsp страницу содержимое другой jsp страницы
@@ -45,22 +42,14 @@
 <img src="content-10.png" alt="" width="40%">
 <img src="content-11.png" alt="" width="40%">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<h1>Купленные билеты:</h1>
-<ul>
-    <%-- Используем скреплеты (это вкрепление java в .jsp страничку). Так нельзя не делать --%>
-    <%
-        Long flightId = Long.valueOf(request.getParameter("flightId"));
-        List<TicketDto> tickets = TicketService.getInstance().findAllByFlightId(flightId);
-        for (TicketDto ticket : tickets) {
-            out.write(String.format("<li>%s</li>", ticket.getSeatNo()));
-        }
-    %>
-</ul>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<c:if test="${not empty requestScope.tickets}">
+    <h1>Купленные билеты:</h1>
+    <ul>
+        <c:forEach var="ticket" items="${requestScope.tickets}">
+            <li>${fn:toLowerCase(ticket.seatNo)}</li>
+        </c:forEach>
+    </ul>
+</c:if>
 </body>
 </html>
-<%-- Используем declaration'ы для переопределения методов --%>
-<%!
-    public void jspInit() {
-        System.out.println("Hello world!");
-    }
-%>
