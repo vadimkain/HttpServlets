@@ -13,6 +13,7 @@
     <title>Title</title>
 </head>
 <body>
+<h1>HTTP. Servlets. 45. HTML Forms</h1>
 <form action="/registration" method="post">
     <label for="name">
         Name:
@@ -45,6 +46,15 @@
         <br>
     </c:forEach>
     <button type="submit">Send</button>
+
+    <c:if test="${not empty requestScope.errors}">
+        <div style="color: red; font-weight: bold;">
+            <c:forEach var="error" items="${requestScope.errors}">
+                <span>${error.message}</span>
+                <br>
+            </c:forEach>
+        </div>
+    </c:if>
 </form>
 </body>
 </html>
