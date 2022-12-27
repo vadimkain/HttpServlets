@@ -13,6 +13,7 @@
     <title>Title</title>
 </head>
 <body>
+<img src="${pageContext.request.contextPath}\images\users\tankionlineimage.png" alt="user img">
 <form action="/registration" method="post" enctype="multipart/form-data">
     <label for="name">
         Name:

@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.*;
 
@@ -47,6 +47,36 @@ public class ImageService {
         try (imageContent) {
             Files.createDirectories(imageFullPath.getParent());
             Files.write(imageFullPath, imageContent.readAllBytes(), CREATE, TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * <h1>HTTP. Servlets. 48. Tag img</h1>
+     * <h2>Метод, который возвращает картинку</h2>
+     * <p>
+     * Возвращает {@code Optional<InputStream>}, потому что вдруг этой картинки не будет и используем
+     * {@code InputStream} потому что с ним есть возможность скачивать не только маленькие файлы, но и более большие
+     * или видео, то в данном случае надо держать именно {@code InputStream}, который будет скачивать все байты
+     * и передавать на сторону клиента.
+     * </p>
+     *
+     * @param imagePath
+     * @return {@code Optional<InputStream>}
+     */
+    public Optional<InputStream> get(String imagePath) {
+        // Получаем полный путь
+        Path imageFullPath = Path.of(basePATH, imagePath);
+
+        try {
+            // Если такой файл существует, то считываем InputStream. В противном случае передаём empty
+            // return Files.exists(imageFullPath) ? Optional.of(Files.newInputStream(imageFullPath)) : Optional.empty();
+            if (Files.exists(imageFullPath)) {
+                return Optional.of(Files.newInputStream(imageFullPath));
+            } else {
+                return Optional.empty();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
