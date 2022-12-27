@@ -1,11 +1,11 @@
 package com.kainv.http.dto;
 
+import jakarta.servlet.http.Part;
 import lombok.Builder;
 import lombok.Value;
 
 
 /**
- * <h1>HTTP. Servlets. 46. Практика. Часть 2</h1>
  * <h2>Dto для процесса создания пользователя.</h2>
  * <p>Преобразовываем dto в entity.</p>
  * <p>
@@ -19,6 +19,10 @@ public class CreateUserDto {
     String name;
     String birthday;
     String email;
+    /**
+     * <p>{@code Part} потому что от пользователя получаем объект типа {@code Part}, а не {@code String}</p>
+     */
+    Part image;
     String password;
     String role;
     String gender;

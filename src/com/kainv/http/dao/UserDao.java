@@ -20,7 +20,7 @@ public class UserDao implements Dao<Integer, User> {
     }
 
     public static final String SAVE_SQL = """
-            INSERT INTO flight_storage.users (name, birthday, email, password, role, gender) VALUES (?, ?, ?, ?, ?, ?); 
+            INSERT INTO flight_storage.users (name, birthday, email, password, role, gender, image) VALUES (?, ?, ?, ?, ?, ?, ?); 
             """;
 
     @Override
@@ -35,6 +35,7 @@ public class UserDao implements Dao<Integer, User> {
             preparedStatement.setString(4, entity.getPassword());
             preparedStatement.setObject(5, entity.getRole().name());
             preparedStatement.setObject(6, entity.getGender().name());
+            preparedStatement.setObject(7, entity.getImage());
 
             preparedStatement.executeUpdate();
 

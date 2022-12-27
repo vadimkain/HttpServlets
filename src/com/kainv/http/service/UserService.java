@@ -8,8 +8,9 @@ import com.kainv.http.mapper.CreateUserMapper;
 import com.kainv.http.validator.CreateUserValidator;
 import com.kainv.http.validator.ValidationResult;
 
+import java.io.IOException;
+
 /**
- * <h1>HTTP. Servlets. 46. Практика. Часть 2</h1>
  * <h2>На уровне сервиса создаём соответствующий метод и передаём {@code userDto}</h2>
  */
 public class UserService {
@@ -56,6 +57,26 @@ public class UserService {
      * В этом примере не будем реализовывать эти варианты, а просто пробросим исключения на основа
      * {@code validationResult}.
      * </p>
+     * <h1>HTTP. Servlets. 47. File upload. Multipart form-data</h1>
+     * <p>
+     * Сразу после сохранения {@code userDao.save(userEntity);} по-хорошему необходимо и сохранить сущность
+     * пользователя и картинку успешно. В противном случае нужно откатить транзакцию, если что-то из одного не
+     * получилсоь сделать. Следовательно, в фреймворках удобно открывать транзакцию и руководить ею на уровне
+     * сервисов, но это усложняет логику, поэтому сделаем по-простому. Сначала сохраним картинку. Ничего страшного,
+     * если будет висеть без сущности, просто её никто не будет использовать. Гораздо хуже, если будем сохранять
+     * картинку после сохранения сущности и у нас это не получится.
+     * </p>
+     * <pre>{@code
+     *         User userEntity = createUserMapper.mapFrom(userDto);
+     *
+     *         try {
+     *             imageService.upload(userEntity.getImage(), userDto.getImage().getInputStream());
+     *         } catch (IOException e) {
+     *             throw new RuntimeException(e);
+     *         }
+     *         userDao.save(userEntity);
+     * }</pre>
+     * <p>После этого нужно поправить {@code createUserMapper.mapFrom(userDto);}</p>
      *
      * @param userDto
      * @return возвращаем id успешно созданной сущности.
@@ -68,18 +89,21 @@ public class UserService {
 
         User userEntity = createUserMapper.mapFrom(userDto);
 
+        try {
+            imageService.upload(userEntity.getImage(), userDto.getImage().getInputStream());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         userDao.save(userEntity);
 
         return userEntity.getId();
     }
 
-    /**
-     * <h2>Подключаем зависимости</h2>
-     */
+    // ПОДКЛЮЧАЕМ ЗАВИСИМОСТИ
     private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final UserDao userDao = UserDao.getInstance();
-
+    private final ImageService imageService = ImageService.getInstance();
 
     private static final UserService INSTANCE = new UserService();
 

@@ -12,12 +12,15 @@ import com.kainv.http.util.LocalDateFormatter;
  * в сущность entity</h2>
  */
 public class CreateUserMapper implements Mapper<CreateUserDto, User> {
+    private static final String IMAGE_FOLDER = "users/";
+
     @Override
     public User mapFrom(CreateUserDto object) {
         return User.builder()
                 .name(object.getName())
                 .birthday(LocalDateFormatter.format(object.getBirthday()))
                 .email(object.getEmail())
+                .image(IMAGE_FOLDER + object.getImage().getSubmittedFileName())
                 .password(object.getPassword())
                 .role(Role.valueOf(object.getRole()))
                 .gender(Gender.valueOf(object.getGender()))
