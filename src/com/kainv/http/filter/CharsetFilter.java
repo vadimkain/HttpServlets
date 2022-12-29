@@ -60,10 +60,17 @@ import java.nio.charset.StandardCharsets;
  *     по умолчанию не срабатывает (т.е. в режиме REQUEST не срабатывает).</li>
  *     <li><b>{@code .REQUEST}</b> - установлен по умолчанию, срабатывает на обычные request запросы.</li>
  * </ul>
+ * <pre>{@code
+ * @WebFilter(
+ *         urlPatterns = "/*",
+ *         //servletNames = {"RegistrationServlet"},
+ *         dispatcherTypes = DispatcherType.REQUEST
+ * )
+ * }</pre>
  */
-@WebFilter(urlPatterns = "/*", servletNames = {
-        "RegistrationServlet"
-},
+@WebFilter(
+        urlPatterns = "/*",
+        //servletNames = {"RegistrationServlet"},
         dispatcherTypes = DispatcherType.REQUEST
 )
 public class CharsetFilter implements Filter {
