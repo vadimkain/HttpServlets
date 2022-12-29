@@ -27,8 +27,13 @@ import java.io.IOException;
  * при успешном сохранении, например сделает {@code .sendRedirect} на страницу login для того чтобы пользоватлеь
  * мог провести логин в систему по только что зарегистрированому пользователю.
  * </p>
+ * <h1>HTTP. Servlets. 49. Servlet Filters. Часть 1</h1>
+ * <p>
+ *     Переопределяем название сервлета (по умолчанию: пакет.название) чтобы сократить название для наших фильтров.
+ * </p>
+ * <pre>{@code @WebServlet(value = "/registration", name = "RegistrationServlet")}</pre>
  */
-@WebServlet("/registration")
+@WebServlet(value = "/registration", name = "RegistrationServlet")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024)
 public class RegistrationServlet extends HttpServlet {
 
