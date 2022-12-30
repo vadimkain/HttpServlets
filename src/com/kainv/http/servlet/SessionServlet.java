@@ -74,8 +74,8 @@ public class SessionServlet extends HttpServlet {
         if (user == null) {
             // Создаём пользователя, обычно создаётся один раз на странице login
             user = UserDto.builder()
-                    .id(25L)
-                    .mail("kainv@gmail.com")
+                    .id(25)
+                    .email("kainv@gmail.com")
                     .build();
 
             // Ложим созданного юзера в сессию

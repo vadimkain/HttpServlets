@@ -2,13 +2,16 @@ package com.kainv.http.service;
 
 import com.kainv.http.dao.UserDao;
 import com.kainv.http.dto.CreateUserDto;
+import com.kainv.http.dto.UserDto;
 import com.kainv.http.entity.User;
 import com.kainv.http.exception.ValidationException;
 import com.kainv.http.mapper.CreateUserMapper;
+import com.kainv.http.mapper.UserMapper;
 import com.kainv.http.validator.CreateUserValidator;
 import com.kainv.http.validator.ValidationResult;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * <h2>На уровне сервиса создаём соответствующий метод и передаём {@code userDto}</h2>
@@ -99,11 +102,31 @@ public class UserService {
         return userEntity.getId();
     }
 
+    /**
+     * <h1>HTTP. Servlets. 51. Authentication. Аутентификация</h1>
+     * <h2>Преобразовываем сущность entity в dto</h2>
+     * <p>
+     * Первым делом должны обновить UserDto и добавить практически все поля из нашей сущности, потому что она будет
+     * глобальной и создать свой маппер для преобразования в эту dto из нашей сущности. Лучше конечно в таком случае
+     * создать отдельную Dto, но сэкономим время.
+     * </p>
+     *
+     * @param email
+     * @param password
+     * @return
+     */
+    public Optional<UserDto> login(String email, String password) {
+        return userDao.findByEmailAndPassword(email, password)
+                .map(userMapper::mapFrom);
+    }
+
     // ПОДКЛЮЧАЕМ ЗАВИСИМОСТИ
     private final CreateUserValidator createUserValidator = CreateUserValidator.getInstance();
     private final CreateUserMapper createUserMapper = CreateUserMapper.getInstance();
     private final UserDao userDao = UserDao.getInstance();
     private final ImageService imageService = ImageService.getInstance();
+    private final UserMapper userMapper = UserMapper.getInstance();
+
 
     private static final UserService INSTANCE = new UserService();
 
