@@ -4,10 +4,8 @@ import com.kainv.http.entity.Gender;
 import com.kainv.http.entity.Role;
 import com.kainv.http.entity.User;
 import com.kainv.http.util.ConnectionManager;
-import com.kainv.http.util.LocalDateFormatter;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 

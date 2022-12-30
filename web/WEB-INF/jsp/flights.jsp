@@ -7,6 +7,7 @@
     <title>Title</title>
 </head>
 <body>
+<%@include file="header.jsp" %>
 <h1>Список перелётов?</h1>
 <c:if test="${not empty requestScope.flights}">
     <c:forEach var="flight" items="${requestScope.flights}">
