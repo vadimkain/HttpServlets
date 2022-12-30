@@ -3,6 +3,7 @@ package com.kainv.http.servlet;
 import com.kainv.http.dto.UserDto;
 import com.kainv.http.service.UserService;
 import com.kainv.http.util.JspHelper;
+import com.kainv.http.util.UrlPath;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -14,7 +15,7 @@ import java.io.IOException;
 /**
  * <h1>HTTP. Servlets. 51. Authentication. Аутентификация</h1>
  */
-@WebServlet("/login")
+@WebServlet(UrlPath.LOGIN)
 public class LoginServlet extends HttpServlet {
     private final UserService userService = UserService.getInstance();
 

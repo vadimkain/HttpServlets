@@ -6,6 +6,7 @@ import com.kainv.http.entity.Role;
 import com.kainv.http.exception.ValidationException;
 import com.kainv.http.service.UserService;
 import com.kainv.http.util.JspHelper;
+import com.kainv.http.util.UrlPath;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -29,11 +30,11 @@ import java.io.IOException;
  * </p>
  * <h1>HTTP. Servlets. 49. Servlet Filters. Часть 1</h1>
  * <p>
- *     Переопределяем название сервлета (по умолчанию: пакет.название) чтобы сократить название для наших фильтров.
+ * Переопределяем название сервлета (по умолчанию: пакет.название) чтобы сократить название для наших фильтров.
  * </p>
  * <pre>{@code @WebServlet(value = "/registration", name = "RegistrationServlet")}</pre>
  */
-@WebServlet(value = "/registration", name = "RegistrationServlet")
+@WebServlet(value = UrlPath.REGISTRATION, name = "RegistrationServlet")
 @MultipartConfig(fileSizeThreshold = 1024 * 1024)
 public class RegistrationServlet extends HttpServlet {
 

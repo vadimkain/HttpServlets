@@ -1,6 +1,7 @@
 package com.kainv.http.servlet;
 
 import com.kainv.http.service.ImageService;
+import com.kainv.http.util.UrlPath;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -21,7 +22,7 @@ import java.io.OutputStream;
  * не конкретное название URL, а по префиксу.
  * </p>
  */
-@WebServlet("/images/*")
+@WebServlet(UrlPath.IMAGES + "/*")
 public class ImageServlet extends HttpServlet {
 
     /**
