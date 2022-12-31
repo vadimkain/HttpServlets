@@ -62,7 +62,7 @@ public class AuthorizationFilter implements Filter {
     }
 
     // КОНСТАНТА - ПУБЛИЧНЫЕ РЕСУРСЫ
-    private static final Set<String> PUBLIC_PATH = Set.of(LOGIN, REGISTRATION, IMAGES);
+    private static final Set<String> PUBLIC_PATH = Set.of(LOGIN, REGISTRATION, IMAGES, LOCALE);
 
     // ПРОВЕРЯЕМ, ЯВЛЯЕТСЯ ЛИ ВВЕДЕННЫЙ URI ПОЛЬЗОВАТЕЛЕМ ПУБЛИЧНЫМ
     private boolean isPublicPath(String uri) {
